@@ -120,7 +120,9 @@ export const bundle = async (
           html
         );
 
-        done('Public URLs of compiled styles were injected into HTML');
+        if (validUrls.length > 0) {
+          done('Public URLs of compiled styles were injected into HTML');
+        }
 
         return htmlWithStyles;
       },

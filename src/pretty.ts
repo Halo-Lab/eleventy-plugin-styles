@@ -17,7 +17,7 @@ const errorToString = (error: Error) =>
 const log = (paint: Chalk, message: string | Error, emoji: string) =>
   console.info(
     ' ' +
-      chalk.bgYellowBright(new Date().toLocaleTimeString()) +
+      chalk.black.bgYellowBright(new Date().toLocaleTimeString()) +
       ' -> ' +
       chalk.bold.gray(PLUGIN_NAME) +
       ': ' +

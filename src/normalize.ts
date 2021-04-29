@@ -32,12 +32,12 @@ export const normalize = async ({
 }: NormalizeStepOptions) => {
   // Useful plugins for PostCSS configuration.
   const plugins: any[] = [
+    ...postcssPlugins,
     purgecss({
       content: [{ raw: html, extension: 'html' }],
       ...purgeCSSOptions,
     }),
     autoprefixer,
-    ...postcssPlugins,
     cssnano({ preset: 'default', ...cssnanoOptions }),
   ];
 

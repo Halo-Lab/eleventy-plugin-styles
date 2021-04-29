@@ -1,5 +1,7 @@
 import chalk, { Chalk } from 'chalk';
 
+import { PLUGIN_NAME } from './constants';
+
 /** Convert Error to string. */
 const errorToString = (error: Error) =>
   error.name + ': ' + error.message + '\n' + error.stack;
@@ -9,21 +11,15 @@ const errorToString = (error: Error) =>
  * to teminal.
  *
  * @param paint - function that paint _message_.
- * @param name of the process.
  * @param message
  * @param emoji - just for fun :)
  */
-const log = (
-  paint: Chalk,
-  name: string,
-  message: string | Error,
-  emoji: string
-) =>
+const log = (paint: Chalk, message: string | Error, emoji: string) =>
   console.info(
     ' ' +
       chalk.bgYellowBright(new Date().toLocaleTimeString()) +
       ' -> ' +
-      chalk.bold.gray(name) +
+      chalk.bold.gray(PLUGIN_NAME) +
       ': ' +
       paint(message instanceof Error ? errorToString(message) : message) +
       ' ' +
@@ -33,26 +29,20 @@ const log = (
 /**
  * Alert about starting of process.
  *
- * @param name of the process that starts execution.
  * @param message
  */
-export const start = (name: string, message: string) =>
-  log(chalk.green, name, message, '🆙');
+export const start = (message: string) => log(chalk.green, message, '🆙');
 
 /**
  * Alert about successful ending of process.
  *
- * @param name of the process that ends execution.
  * @param message
  */
-export const done = (name: string, message: string) =>
-  log(chalk.magenta, name, message, '🙌');
+export const done = (message: string) => log(chalk.magenta, message, '🙌');
 
 /**
  * Alert about error that was occured during process execution.
  *
- * @param name of the proess that finishes with error.
  * @param message
  */
-export const oops = (name: string, message: string | Error) =>
-  log(chalk.red, name, message, '💥');
+export const oops = (message: string | Error) => log(chalk.red, message, '💥');

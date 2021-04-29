@@ -8,7 +8,7 @@ import { normalize } from './normalize';
 import { makeDirectories } from './mkdir';
 import { done, oops, start } from './pretty';
 import { StylesPluginOptions } from './types';
-import { PLUGIN_NAME, STYLESHEET_LINK_REGEXP } from './constants';
+import { STYLESHEET_LINK_REGEXP } from './constants';
 
 type BundleOptions = Required<Omit<StylesPluginOptions, 'addWatchTarget'>>;
 
@@ -28,10 +28,7 @@ const findAndProcessFiles = (
 
   return rip(html, STYLESHEET_LINK_REGEXP).map(
     async (publicSourcePathToStyle) => {
-      start(
-        PLUGIN_NAME,
-        `Start compiling "${publicSourcePathToStyle}" stylesheet.`
-      );
+      start(`Start compiling "${publicSourcePathToStyle}" stylesheet.`);
 
       const absolutePathToStyle = resolve(
         inputDirectory,
@@ -65,7 +62,6 @@ const findAndProcessFiles = (
         })
         .then(() =>
           done(
-            PLUGIN_NAME,
             `Compiled CSS was written to "${join(
               buildDirectory,
               publicDirectory,
@@ -82,7 +78,7 @@ const findAndProcessFiles = (
               publicOutputPathToStyle
             ),
           }),
-          (error) => oops(PLUGIN_NAME, error)
+          oops
         );
     }
   );
@@ -124,12 +120,9 @@ export const bundle = async (
           html
         );
 
-        done(
-          PLUGIN_NAME,
-          'Public URLs of compiled styles were injected into HTML'
-        );
+        done('Public URLs of compiled styles were injected into HTML');
 
         return htmlWithStyles;
       },
-      (error) => (oops(PLUGIN_NAME, error), html)
+      (error) => (oops(error), html)
     );

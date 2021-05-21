@@ -3,17 +3,18 @@ import { join, resolve, dirname } from 'path';
 
 import { rip } from './rip';
 import { compile } from './compile';
-import { pathStats } from './paths_stats';
 import { normalize } from './normalize';
 import { makeDirectories } from './mkdir';
 import { done, oops, start } from './pretty';
 import { StylesPluginOptions } from './types';
 import { STYLESHEET_LINK_REGEXP } from './constants';
+import { buildOutputUrl, pathStats, resolveFile } from './url';
 
 type BundleOptions = Required<Omit<StylesPluginOptions, 'addWatchTarget'>>;
 
 const findAndProcessFiles = (
   html: string,
+  inputPath: string,
   outputPath: string,
   {
     sassOptions,
@@ -30,13 +31,14 @@ const findAndProcessFiles = (
     async (publicSourcePathToStyle) => {
       start(`Start compiling "${publicSourcePathToStyle}" stylesheet.`);
 
-      const absolutePathToStyle = resolve(
+      const absolutePathToStyle = resolveFile(
+        publicSourcePathToStyle,
         inputDirectory,
-        publicSourcePathToStyle
+        dirname(inputPath)
       );
-      const publicOutputPathToStyle = publicSourcePathToStyle.replace(
-        /(sa|sc)ss$/,
-        'css'
+      const publicOutputPathToStyle = buildOutputUrl(
+        publicSourcePathToStyle,
+        publicDirectory
       );
 
       const { css } = compile(absolutePathToStyle, sassOptions);
@@ -52,7 +54,6 @@ const findAndProcessFiles = (
         .then(async ({ css }) => {
           const pathToOutputFile = resolve(
             buildDirectory,
-            publicDirectory,
             publicOutputPathToStyle
           );
 
@@ -64,7 +65,6 @@ const findAndProcessFiles = (
           done(
             `Compiled CSS was written to "${join(
               buildDirectory,
-              publicDirectory,
               publicOutputPathToStyle
             )}"`
           )
@@ -74,7 +74,6 @@ const findAndProcessFiles = (
             input: publicSourcePathToStyle,
             output: join(
               ...nestedHTMLPath.map(() => '..'),
-              publicDirectory,
               publicOutputPathToStyle
             ),
           }),
@@ -86,6 +85,7 @@ const findAndProcessFiles = (
 
 export const bundle = async (
   html: string,
+  inputPath: string,
   outputPath: string,
   {
     sassOptions,
@@ -97,7 +97,7 @@ export const bundle = async (
   }: BundleOptions
 ) =>
   Promise.all(
-    findAndProcessFiles(html, outputPath, {
+    findAndProcessFiles(html, inputPath, outputPath, {
       sassOptions,
       cssnanoOptions,
       postcssPlugins,

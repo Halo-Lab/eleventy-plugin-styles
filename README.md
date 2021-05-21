@@ -84,7 +84,7 @@ interface StylesPluginOptions {
 
 #### inputDirectory
 
-Plugin extracts links to stylesheet files from HTML. Therefore your templates should have links to **source** style files.
+Plugin extracts links to stylesheet files from HTML. Therefore, your templates should have links to **source** style files.
 
 For example:
 
@@ -115,6 +115,14 @@ Plugin will assume that path style file is `src/styles/style.scss` 🎉 And afte
 
 > `_site` is used just for example. Actually [name of the directory will be up to you](https://www.11ty.dev/docs/config/#output-directory) - plugin will know about it.
 
+You can write relative path to styles if you prefer such style. For example, if your template path is `src/templates/template.11ty.js` and path to style file is `src/styles/style.scss`, then:
+
+```html
+<link rel="stylesheet" href="../styles/style.scss" />
+```
+
+> If path starts with leading slash (`/`), then it will be removed.
+
 > If HTML file is in other directory, then referenced stylesheet, plugin will build relative path to style. For example, if output of HTML is `_site/pages/about.html` and CSS's public path is `style.css`(in root of `_site`), then plugin formats public path to `../style.css`. So you aren't needed to fix links to your assets 🤘!
 
 #### publicDirectory
@@ -131,13 +139,13 @@ module.exports = (eleventyConfig) => {
 };
 ```
 
-Given above example, stylesheet file will be placed into `_site/styles` directory and it's public path will be `styles/style.css`.
+Given above example, stylesheet file will be placed into `_site/styles` directory, and its public path will be `styles/style.css`.
 
 Pretty convenient, yes? 🙂
 
 ### addWatchTarget
 
-By default Eleventy will watch for changes inside _inputDirectory_. You have an opportunity to disable it:
+By default, Eleventy will watch for changes inside _inputDirectory_. You have an opportunity to disable it:
 
 ```js
 // .eleventy.js
@@ -154,7 +162,7 @@ module.exports = (eleventyConfig) => {
 
 For now plugin supports only [`sass`](https://sass-lang.com/) preprocessor.
 
-If you want customize its behavior then [options](https://www.npmjs.com/package/sass#api) need to be passed to plugin.
+If you want to customize its behavior then [options](https://www.npmjs.com/package/sass#api) need to be passed to plugin.
 
 ```js
 // .eleventy.js
@@ -210,7 +218,7 @@ module.exports = (eleventyConfig) => {
 };
 ```
 
-> By providing additional plugins you will not remove `purgeCSS` and `cssnano` plugins, so if you want to change their behavior provide according options as described above ☝️.
+> By providing additional plugins `purgeCSS` and `cssnano` plugins will not be removed, so if you want to change their behavior provide according options as described above ☝️.
 
 ## Word from author
 

@@ -24,20 +24,27 @@ export const styles = (
     publicDirectory = '',
   }: StylesPluginOptions = {}
 ) => {
-  config.addTransform('styles', async (content: string, outputPath: string) => {
-    if (outputPath.endsWith('html')) {
-      return bundle(content, outputPath, {
-        sassOptions,
-        inputDirectory,
-        cssnanoOptions,
-        postcssPlugins,
-        purgeCSSOptions,
-        publicDirectory,
-      });
-    }
+  config.addTransform(
+    'styles',
+    async function (
+      this: Record<string, string>,
+      content: string,
+      outputPath: string
+    ) {
+      if (outputPath.endsWith('html')) {
+        return bundle(content, this.inputPath, outputPath, {
+          sassOptions,
+          inputDirectory,
+          cssnanoOptions,
+          postcssPlugins,
+          purgeCSSOptions,
+          publicDirectory,
+        });
+      }
 
-    return content;
-  });
+      return content;
+    }
+  );
 
   if (addWatchTarget) {
     config.addWatchTarget(inputDirectory);

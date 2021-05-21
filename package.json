@@ -1,6 +1,6 @@
 {
   "name": "eleventy-plugin-styles",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Plugin for handling stylesheets from HTML.",
   "main": "index.js",
   "exports": {
@@ -19,7 +19,8 @@
     "copy:package": "cpy package.json build",
     "copy:readme": "cpy README.md build",
     "copy:license": "cpy LICENSE build",
-    "release": "npm run build; npm publish build/ --access public"
+    "prerelease": "npm run build",
+    "release": "npm publish build/ --access public"
   },
   "keywords": [
     "Eleventy",
@@ -36,7 +37,7 @@
     "@types/cssnano": "^4.0.0",
     "@types/sass": "^1.16.0",
     "cpy-cli": "^3.1.1",
-    "prettier": "^2.2.1",
+    "prettier": "^2.3.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.45.2",
     "rollup-plugin-terser": "^7.0.2",

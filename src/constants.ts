@@ -5,3 +5,6 @@ export const STYLESHEET_LINK_REGEXP = /<link\s+[^>]*href="([^"]+\.(?:css|scss|sa
 
 export const DEFAULT_STYLES_DIRECTORY = 'styles';
 export const DEFAULT_SOURCE_DIRECTORY = 'src';
+
+export const UP_LEVEL_GLOB = '..';
+export const URL_DELIMITER = '/';

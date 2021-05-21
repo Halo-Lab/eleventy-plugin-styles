@@ -1,4 +1,10 @@
-# [1.0.2] - 2021-04-29
+# [1.1.0] - 2021-05-21
+
+### Added
+
+- Ability to write relative urls of styles.
+
+## [1.0.2] - 2021-04-29
 
 ### Changed
 

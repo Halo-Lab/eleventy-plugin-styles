@@ -14,11 +14,11 @@ What this plugin can do:
 
 1. Automatically reaches your styles, even from `node_modules` ones!
 
-    > In order to import style from package, simply write `@(import|use) 'package_name/path/to/style';` 👐
+   > In order to import style from package, simply write `@(import|use) 'package_name/path/to/style';` 👐
 
 2. Compiles `sass` and `scss`.
 
-    > Plugin uses new [`sass`](https://www.npmjs.com/package/sass) package, that allow to use fresh Sass features (such as [module system](https://sass-lang.com/documentation/at-rules/use) etc).
+   > Plugin uses new [`sass`](https://www.npmjs.com/package/sass) package, that allow to use fresh Sass features (such as [module system](https://sass-lang.com/documentation/at-rules/use) etc).
 
 3. Normalizes compiled CSS with [`PostCSS`](https://postcss.org/), [`autoprefixer`](https://www.npmjs.com/package/autoprefixer), gets rid of unused style rules with [`PurgeCSS`](https://purgecss.com/) and minifies CSS with [`cssnano`](https://cssnano.co/). And you can add much more [plugins](https://www.postcss.parts/)!
 
@@ -59,6 +59,8 @@ interface StylesPluginOptions {
    * Directory inside _output_ folder to be used as
    * warehouse for all compiled styles. Will be
    * prepended to public style's urls in HTML.
+   *
+   * Should be relative to _build directory_.
    */
   publicDirectory?: string;
   /**
@@ -168,7 +170,9 @@ If you want to customize its behavior then [options](https://www.npmjs.com/packa
 // .eleventy.js
 module.exports = (eleventyConfig) => {
   eleventyConfig.addPlugin(styles, {
-    sassOptions: { /* Some useful options. */ }
+    sassOptions: {
+      /* Some useful options. */
+    },
   });
 };
 ```
@@ -183,7 +187,9 @@ module.exports = (eleventyConfig) => {
 // .eleventy.js
 module.exports = (eleventyConfig) => {
   eleventyConfig.addPlugin(styles, {
-    purgeCSSOptions: { /* Some useful options. */ }
+    purgeCSSOptions: {
+      /* Some useful options. */
+    },
   });
 };
 ```
@@ -198,7 +204,9 @@ module.exports = (eleventyConfig) => {
 // .eleventy.js
 module.exports = (eleventyConfig) => {
   eleventyConfig.addPlugin(styles, {
-    cssnanoOptions: { /* Some useful options. */ }
+    cssnanoOptions: {
+      /* Some useful options. */
+    },
   });
 };
 ```
@@ -213,7 +221,9 @@ By default it uses [`default preset`](https://cssnano.co/docs/optimisations) for
 // .eleventy.js
 module.exports = (eleventyConfig) => {
   eleventyConfig.addPlugin(styles, {
-    postcssPlugins: [ /* Some useful plugins. */ ]
+    postcssPlugins: [
+      /* Some useful plugins. */
+    ],
   });
 };
 ```

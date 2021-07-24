@@ -1,7 +1,8 @@
 import { join } from 'path';
 
-import { bundle } from './bundle';
+import { done } from './pretty';
 import { StylesPluginOptions } from './types';
+import { bundle, transformStylesheet } from './bundle';
 import {
   DEFAULT_SOURCE_DIRECTORY,
   DEFAULT_STYLES_DIRECTORY,
@@ -9,7 +10,7 @@ import {
 
 /**
  * Plugin that searches for links to stylesheets inside HTML,
- * compiles, normalizes and mificates them. After that - writes
+ * compiles, normalizes and minficates them. After that - writes
  * to the _output_ directory.
  */
 export const styles = (
@@ -31,8 +32,10 @@ export const styles = (
       content: string,
       outputPath: string
     ) {
-      if (outputPath.endsWith('html')) {
-        return bundle(content, this.inputPath, outputPath, {
+      const output = this.outputPath ?? outputPath;
+
+      if (output.endsWith('html')) {
+        return bundle(content, this.inputPath, output, {
           sassOptions,
           inputDirectory,
           cssnanoOptions,
@@ -45,6 +48,17 @@ export const styles = (
       return content;
     }
   );
+
+  config.on('beforeWatch', (changedFiles: ReadonlyArray<string>) => {
+    if (
+      changedFiles.some((relativePath) => /(sc|sa|c)ss$/.test(relativePath))
+    ) {
+      // Rebuild styles if they are changed.
+      transformStylesheet.cache.clear();
+    } else {
+      done('No stylesheet file was changed. Skips compilation.');
+    }
+  });
 
   if (addWatchTarget) {
     config.addWatchTarget(inputDirectory);

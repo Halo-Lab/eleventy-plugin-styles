@@ -1,4 +1,15 @@
-# [1.1.0] - 2021-05-21
+# [1.1.1] - 2021-07-24
+
+### Changed
+
+- Logger output slightly prettier text now.
+
+### Fixed
+
+- Repeated recompilation of styles if file is referenced in two or more different templates.
+- Style recompiliation on every change that wasn't made in stylesheets.
+
+## [1.1.0] - 2021-05-21
 
 ### Added
 

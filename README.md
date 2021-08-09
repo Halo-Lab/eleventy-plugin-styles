@@ -24,6 +24,8 @@ What this plugin can do:
 
 4. Sets correct relative paths between HTML and CSS.
 
+5. Separates critical styles and uncritical ones. Thanks to [critical](https://github.com/addyosmani/critical) package.
+
 ### Installation
 
 At first do:
@@ -50,6 +52,11 @@ Plugin can accept the following options:
 
 ```ts
 interface StylesPluginOptions {
+  /**
+   * Options that will be passed to [critical](https://github.com/addyosmani/critical)
+   * package.
+   */
+  criticalOptions?: CriticalOptions;
   /**
    * Path to directory with all styles.
    * Should be relative to _current working directory_.
@@ -125,7 +132,7 @@ You can write relative path to styles if you prefer such style. For example, if 
 
 > If path starts with leading slash (`/`), then it will be removed.
 
-> If HTML file is in other directory, then referenced stylesheet, plugin will build relative path to style. For example, if output of HTML is `_site/pages/about.html` and CSS's public path is `style.css`(in root of `_site`), then plugin formats public path to `../style.css`. So you aren't needed to fix links to your assets 🤘!
+> If HTML file is in other directory, then referenced stylesheet, plugin will build relative path to style. For example, if output of HTML is `_site/pages/about.html` and CSS's public path is `style.css`(in root of `_site`), then plugin formats public path to `../style.css`. So you don't need to fix links to your assets 🤘!
 
 #### publicDirectory
 
@@ -229,6 +236,25 @@ module.exports = (eleventyConfig) => {
 ```
 
 > By providing additional plugins `purgeCSS` and `cssnano` plugins will not be removed, so if you want to change their behavior provide according options as described above ☝️.
+
+### criticalOptions
+
+[critical](https://github.com/addyosmani/critical) is included. By default, it works in `production` mode.
+
+```js
+// .eleventy.js
+module.exports = (eleventyConfig) => {
+  eleventyConfig.addPlugin(styles, {
+    criticalOptions: {
+      /* Some useful options. */
+    },
+  });
+};
+```
+
+By default, it inlines critical styles into HTML and defers loading uncritical styles. It extracts critical styles from linked stylesheets, so you can safely import the same stylesheet file into multiple templates.
+
+> Tip: `critical` tries its best to rebase assets in styles, but it won't touch assets that have absolute public URL 🤗.
 
 ## Word from author
 

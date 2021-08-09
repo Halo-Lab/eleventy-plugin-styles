@@ -1,5 +1,5 @@
 import { existsSync } from 'fs';
-import { dirname, sep, resolve, join } from 'path';
+import { dirname, sep, resolve } from 'path';
 
 import { UP_LEVEL_GLOB, URL_DELIMITER } from './constants';
 
@@ -38,19 +38,20 @@ export const buildOutputUrl = (
 ): string => {
   const { isAbsolute } = pathStats(url);
 
-  return (isAbsolute
-    ? join(publicDirectory, url.slice(1))
-    : url.startsWith(UP_LEVEL_GLOB)
-    ? join(
-        publicDirectory,
-        removeNameCollision(
-          url
-            .split(URL_DELIMITER)
-            .filter((part) => part !== UP_LEVEL_GLOB)
-            .join(URL_DELIMITER),
-          publicDirectory
-        )
-      )
-    : join(publicDirectory, url)
+  return (
+    isAbsolute
+      ? [publicDirectory, url.slice(1)].join(URL_DELIMITER)
+      : url.startsWith(UP_LEVEL_GLOB)
+      ? [
+          publicDirectory,
+          removeNameCollision(
+            url
+              .split(URL_DELIMITER)
+              .filter((part) => part !== UP_LEVEL_GLOB)
+              .join(URL_DELIMITER),
+            publicDirectory
+          ),
+        ].join(URL_DELIMITER)
+      : [publicDirectory, url].join(URL_DELIMITER)
   ).replace(/(sa|sc)ss$/, 'css');
 };

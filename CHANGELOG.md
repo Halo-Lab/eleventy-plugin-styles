@@ -1,4 +1,15 @@
-# [1.1.1] - 2021-07-24
+# [1.2.0] - 2021-08-09
+
+### Added
+
+- Ability to inline critical styles into HTML and defer uncritical styles.
+- Add `critical` to _peerDependencies_.
+
+### Fixed
+
+- Use `/` as separator symbol in URL instead of system separator.
+
+## [1.1.1] - 2021-07-24
 
 ### Changed
 

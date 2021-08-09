@@ -21,6 +21,7 @@ export default {
     'chalk',
     'cssnano',
     'postcss',
+    'critical',
     'autoprefixer',
     '@fullhuman/postcss-purgecss',
   ],

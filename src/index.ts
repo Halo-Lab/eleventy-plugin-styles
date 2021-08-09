@@ -21,6 +21,7 @@ export const styles = (
     cssnanoOptions = {},
     addWatchTarget = true,
     postcssPlugins = [],
+    criticalOptions = {},
     purgeCSSOptions = {},
     publicDirectory = '',
   }: StylesPluginOptions = {}
@@ -40,6 +41,7 @@ export const styles = (
           inputDirectory,
           cssnanoOptions,
           postcssPlugins,
+          criticalOptions,
           purgeCSSOptions,
           publicDirectory,
         });

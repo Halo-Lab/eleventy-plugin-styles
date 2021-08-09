@@ -1,21 +1,24 @@
 import { promises } from 'fs';
 import { join, resolve, dirname } from 'path';
 
+// @ts-ignore
+import * as critical from 'critical';
 import { bold } from 'chalk';
 import { memoize } from '@fluss/core';
 
 import { rip } from './rip';
 import { compile } from './compile';
 import { normalize } from './normalize';
+import { isProduction } from './is_production';
 import { makeDirectories } from './mkdir';
 import { done, oops, start } from './pretty';
-import { StylesPluginOptions } from './types';
-import { STYLESHEET_LINK_REGEXP } from './constants';
+import { Asset, StylesPluginOptions } from './types';
+import { STYLESHEET_LINK_REGEXP, URL_DELIMITER } from './constants';
 import { buildOutputUrl, pathStats, resolveFile } from './url';
 
 type BundleOptions = Required<Omit<StylesPluginOptions, 'addWatchTarget'>>;
 
-interface TransformParameters extends BundleOptions {
+interface TransformParameters extends Omit<BundleOptions, 'criticalOptions'> {
   readonly html: string;
   readonly inputPath: string;
   readonly nestedHTMLPath: ReadonlyArray<string>;
@@ -29,12 +32,11 @@ export const transformStylesheet = memoize(
     inputPath,
     sassOptions,
     inputDirectory,
-    publicDirectory,
-    cssnanoOptions,
-    purgeCSSOptions,
-    postcssPlugins,
     buildDirectory,
-    nestedHTMLPath,
+    cssnanoOptions,
+    postcssPlugins,
+    publicDirectory,
+    purgeCSSOptions,
     publicSourcePathToStyle,
   }: TransformParameters) => {
     start(`Start compiling ${bold(publicSourcePathToStyle)}.`);
@@ -56,8 +58,8 @@ export const transformStylesheet = memoize(
       css,
       url: absolutePathToStyle,
       cssnanoOptions,
-      purgeCSSOptions,
       postcssPlugins,
+      purgeCSSOptions,
     })
       .then(async ({ css }) => {
         const pathToOutputFile = resolve(
@@ -78,7 +80,7 @@ export const transformStylesheet = memoize(
       )
       .then(
         // Creates public path.
-        () => join(...nestedHTMLPath.map(() => '..'), publicOutputPathToStyle),
+        () => URL_DELIMITER + publicOutputPathToStyle,
         oops
       );
   },
@@ -89,7 +91,7 @@ const findAndProcessFiles = (
   html: string,
   inputPath: string,
   outputPath: string,
-  options: BundleOptions
+  options: Omit<BundleOptions, 'criticalOptions'>
 ) => {
   const [buildDirectory, ...nestedHTMLPath] = pathStats(outputPath).directories;
 
@@ -119,6 +121,7 @@ export const bundle = async (
     inputDirectory,
     purgeCSSOptions,
     publicDirectory,
+    criticalOptions,
   }: BundleOptions
 ) =>
   Promise.all(
@@ -145,18 +148,47 @@ export const bundle = async (
           html
         );
 
-        return [htmlWithStyles, validUrls] as const;
-      },
-      (error) => (oops(error), [html, []] as const)
-    )
-    .then(([html, urls]) => {
-      if (urls.length > 0) {
-        done(
-          `${bold(
-            '[' + urls.map(({ output }) => output).join(', ') + ']'
-          )} URLs were injected into ${bold(outputPath)}`
-        );
-      }
+        if (validUrls.length > 0) {
+          done(
+            `${bold(validUrls.map(({ output }) => output).join(', '))} style ${
+              validUrls.length > 1 ? 's were' : 'was'
+            } injected into ${bold(outputPath)}.`
+          );
+        }
 
-      return html;
-    });
+        return htmlWithStyles;
+      },
+      (error) => (oops(error), html)
+    )
+    .then((html) => {
+      const [buildDirectory] = pathStats(outputPath).directories;
+
+      return isProduction()
+        ? critical.generate({
+            html,
+            base: buildDirectory,
+            inline: true,
+            extract: true,
+            rebase: ({ url, absolutePath }: Asset) =>
+              url.startsWith(URL_DELIMITER) ? url : absolutePath,
+            penthouse: { timeout: 60000 },
+            ...criticalOptions,
+          })
+        : html;
+    })
+    .then((result) => {
+      if (typeof result === 'string') {
+        return { html: result };
+      } else {
+        done(
+          `Critical CSS was injected into ${bold(
+            outputPath
+          )} and uncritical styles are deferred.`
+        );
+        return result;
+      }
+    })
+    .then(
+      ({ html }) => html,
+      (error: Error) => (oops(error), html)
+    );
